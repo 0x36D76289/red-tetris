@@ -1,0 +1,16 @@
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+const App = () => {
+  return (
+    <div className="App">
+      <h1>Red Tetris</h1>
+      <Routes>
+        <Route path="/" element={<div>Bienvenue sur red tetris!</div>} />
+        <Route path="/:room/:player" element={<div>Game Room</div>} />
+      </Routes>
+    </div>
+  );
+};
+
+export default App;
