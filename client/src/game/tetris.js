@@ -1,5 +1,11 @@
 import _ from "lodash"
 
+// POUR CELESTE: implémenter les fonctions de logique de Tetris ici
+// La plupart de ses fonctions seront sur le serveur directement
+// Le client enverra des requêtes pour chaque action (déplacement, rotation, tick de jeu, etc.)
+// et recevra la grille mise à jour en réponse
+// Tu peux directement copier-coller les fonctions existantes ici et les adapter pour qu'elles
+
 export const tetriminos = {
   I : [
     [1,1,1,1],
@@ -158,7 +164,6 @@ export function processGameTick(grid) {
 
 export function findMovingTetriminoPositions(grid) {
   const movingPositions = [];
-  
   // Find all moving tetrimino positions
   for (let r = 0; r < grid.length; r++) {
     for (let c = 0; c < grid[r].length; c++) {
@@ -189,7 +194,6 @@ export function setPositions(grid, positions, value) {
 
 export function moveTetriminoLeft(grid) {
   const movingPositions = findMovingTetriminoPositions(grid);
-  console.log("Moving Positions:", movingPositions);
   
   // Check if can move left
   for (const [r, c] of movingPositions) {
@@ -197,13 +201,10 @@ export function moveTetriminoLeft(grid) {
       return grid; // cannot move left
     }
   }
-    console.log("AVANT clear:", grid[movingPositions[0][0]][movingPositions[0][1]]); // moving-X
 
   let newGrid = clearPositions(grid, movingPositions);
-    console.log("APRES clear:", grid[movingPositions[0][0]][movingPositions[0][1]]); // 0 !!!
   // Set new positions
   const newPositions = movingPositions.map(([r, c]) => [r, c - 1]);
-  console.log("New Positions:", newPositions);
   newGrid = setPositions(newGrid, newPositions, grid[movingPositions[0][0]][movingPositions[0][1]]);
   
   return newGrid;

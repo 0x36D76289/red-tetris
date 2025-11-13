@@ -10,7 +10,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <h1>coucou</h1>
+      {/* <h1>coucou</h1> */}
       <nav>
         <Link to="/">Home</Link> | <Link to="/about">About</Link> | <Link to="/game">Game</Link>
       </nav>

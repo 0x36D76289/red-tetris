@@ -4,7 +4,29 @@ import "../styles/game.css"
 import _ from "lodash";
 
 
-console.log("Game.jsx loaded")
+let DEBUG = false; // Set this to true to see cell values
+
+
+function requestMoveTetriminoLeft() {
+  // Placeholder for server communication
+  console.log("Requesting move left from server...");
+}
+
+function requestMoveTetriminoRight() {
+  // Placeholder for server communication
+  console.log("Requesting move right from server...");
+}
+
+function requestMoveTetriminoDown() {
+  // Placeholder for server communication
+  console.log("Requesting move down from server...");
+}
+
+function requestRotateTetrimino() {
+  // Placeholder for server communication
+  console.log("Requesting rotate from server...");
+}
+
 
 function TetrisGrid({grid}) {
 
@@ -29,7 +51,7 @@ function TetrisGrid({grid}) {
           className={`tetris-cell ${cellValToClassName(cell)}`} 
           key={`${cellIndex}`}
         >
-        {cellValToClassName(cell)}</div>
+        { DEBUG ? cell : (cellValToClassName(cell))}</div>
       ))}
     </div>
   )
@@ -46,33 +68,39 @@ export default function Game() {
     setGameStarted(true);
   };
 
-  function handleKeyDown(event) {
-    if (!gameStarted) return;
 
-    let newGrid;
-    switch (event.key) {
-      case 'ArrowLeft':
-        newGrid = tetris.moveTetriminoLeft(grid);
-        setGrid(newGrid);
-        break;
-      case 'ArrowRight':
-        newGrid = tetris.moveTetriminoRight(grid);
-        setGrid(newGrid);
-        break;
-      case 'ArrowDown':
-        newGrid = tetris.moveTetriminoDown(grid);
-        setGrid(newGrid);
-        break;
-      case 'ArrowUp':
-        newGrid = tetris.rotateTetrimino(grid);
-        setGrid(newGrid);
-        break;
-      default:
-        break;
+  // POUR CELESTE: gérer les inputs clavier pour déplacer les pièces
+  // Remplacer chaque ligne de setGrid par une requête au serveur
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (!gameStarted) return;
+
+      switch (event.key) {
+        case 'ArrowLeft':
+          setGrid(prevGrid => tetris.moveTetriminoLeft(prevGrid));
+          // POUR CELESTE exemple: remplacer la ligne au dessus par:
+          // requestMoveTetriminoLeft();
+          // le moveTetriminoLeft sera fait côté serveur
+          break;
+        case 'ArrowRight':
+          setGrid(prevGrid => tetris.moveTetriminoRight(prevGrid));
+          break;
+        case 'ArrowDown':
+          setGrid(prevGrid => tetris.moveTetriminoDown(prevGrid));
+          break;
+        case 'ArrowUp':
+          setGrid(prevGrid => tetris.rotateTetrimino(prevGrid));
+          break;
+        default:
+          break;
+      }
     }
-  }
+     document.addEventListener('keydown', handleKeyDown);
+     return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [gameStarted]);
   
-    // Effet pour mettre à jour une cellule aléatoire toutes les secondes
+
+  // POUR CELESTE: mettre en commentaire le useEffect et mettre a jour directement la grille avec le serveur 
   useEffect(() => {
     if (!gameStarted) return;
 
@@ -86,25 +114,16 @@ export default function Game() {
       
     }, 200); // Met à jour toutes x millisecondes
     
-     document.addEventListener('keydown', handleKeyDown);
-
-
-
     return () => {
       clearInterval(interval);
-      document.removeEventListener('keydown', handleKeyDown);
-
-      
-    }
+    };
   }, [gameStarted]);
-
+  // FIN COMMENTAIRE pour Celeste
 
   useEffect(() => {
     startGame();
 
   }, [])
-
-
 
 
   return (
