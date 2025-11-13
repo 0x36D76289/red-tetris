@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import * as tetris from "../game/tetris";
 import "../styles/game.css"
-import _, { set } from "lodash";
+import _ from "lodash";
 
 
 console.log("Game.jsx loaded")
@@ -10,18 +10,27 @@ function TetrisGrid({grid}) {
 
   const flattenedGrid = grid.flat();
 
+
+  function cellValToClassName(cellVal) {
+    if (cellVal === 0) return '';
+    if (typeof cellVal === 'string' && cellVal.startsWith('moving-')) {
+      return cellVal.slice(7).toUpperCase();
+    }
+    if (typeof cellVal === 'string')
+      return cellVal.toUpperCase();
+    return '';
+  }
+
   return (
     <div className="tetris-grid" >
 
       {flattenedGrid.map((cell, cellIndex) => (
         <div 
-          className={`tetris-cell ${cell || ''}`} 
+          className={`tetris-cell ${cellValToClassName(cell)}`} 
           key={`${cellIndex}`}
         >
-        {cell}</div>
+        {cellValToClassName(cell)}</div>
       ))}
-
-
     </div>
   )
 }
@@ -29,19 +38,39 @@ function TetrisGrid({grid}) {
 export default function Game() {
   const [grid, setGrid] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
-  const [tetriminoPositions, setTetriminoPositions] = useState([]);
   
   function startGame() {
     const newGrid = tetris.createGrid(10, 20);
     console.log(newGrid)
     setGrid(newGrid);
-    const randomTetrimino = tetris.generateRandomTetrimino();
-    const { grid: gridWithTetrimino, tetriminoPositions} = tetris.spawnTetrimino(newGrid, randomTetrimino.letter);
-    console.log(gridWithTetrimino);
-    setGrid(gridWithTetrimino);
-    setTetriminoPositions(tetriminoPositions);
     setGameStarted(true);
   };
+
+  function handleKeyDown(event) {
+    if (!gameStarted) return;
+
+    let newGrid;
+    switch (event.key) {
+      case 'ArrowLeft':
+        newGrid = tetris.moveTetriminoLeft(grid);
+        setGrid(newGrid);
+        break;
+      case 'ArrowRight':
+        newGrid = tetris.moveTetriminoRight(grid);
+        setGrid(newGrid);
+        break;
+      case 'ArrowDown':
+        newGrid = tetris.moveTetriminoDown(grid);
+        setGrid(newGrid);
+        break;
+      case 'ArrowUp':
+        newGrid = tetris.rotateTetrimino(grid);
+        setGrid(newGrid);
+        break;
+      default:
+        break;
+    }
+  }
   
     // Effet pour mettre à jour une cellule aléatoire toutes les secondes
   useEffect(() => {
@@ -49,23 +78,24 @@ export default function Game() {
 
     const interval = setInterval(() => {
       setGrid(prevGrid => {
-        // const newGrid = _.cloneDeep(prevGrid);
-        // const randomRow = Math.floor(Math.random() * newGrid.length);
-        // const randomCol = Math.floor(Math.random() * newGrid[0].length);
-        // const tetriminoLetters = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-        // const randomLetter = _.sample(tetriminoLetters);
-        // newGrid[randomRow][randomCol] = randomLetter;
-        const newGameState = tetris.moveTetriminoDown(prevGrid, tetriminoPositions);
-        // console.log("New Game State:", newGameState);
-        setTetriminoPositions(newGameState.tetriminoPositions);
 
-        return newGameState.grid;
+        const newGrid = tetris.processGameTick(prevGrid);
+        return newGrid;
       });
       console.log("Grid updated")
       
-    }, 200); // Met à jour toutes les secondes
+    }, 200); // Met à jour toutes x millisecondes
+    
+     document.addEventListener('keydown', handleKeyDown);
 
-    return () => clearInterval(interval);
+
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('keydown', handleKeyDown);
+
+      
+    }
   }, [gameStarted]);
 
 

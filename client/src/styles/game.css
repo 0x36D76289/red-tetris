@@ -4,36 +4,40 @@
 	width: 300px;
 	height: 500px;
 	padding:0;
+	gap: 1px;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(20, 1fr);
 	background-color: #222244;
 }
 
 .I {
-	background-color: cyan;
+	/* background-color: cyan;  */
+	background-color: rgba(86, 255, 255, 0.877);
+
 }
 
 .O {
-	background-color: yellow;
+	/* background-color: yellow; */
+	background-color: rgb(255, 255, 36);
 }
 
 .T {
-	background-color: purple;
+	background-color: rgb(180, 51, 180);
 }
 
 .J {
-	background-color: blue;
+	background-color: rgb(93, 93, 255);
 }
 
 .L {
-	background-color: orange;
+	background-color: rgb(255, 180, 42);
 }
 
 .S {
-	background-color: green;
+	background-color: rgb(45, 197, 45);
 }
 
 .Z {
-	background-color: red;
+	background-color: rgb(255, 77, 77);
 }
 
