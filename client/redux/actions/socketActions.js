@@ -3,10 +3,11 @@ import { io } from "socket.io-client";
 let socket = null;
 
 export const initializeSocket = () => (dispatch) => {
-  const socketUrl =
-    process.env.NODE_ENV === "production"
-      ? window.location.origin
-      : "http://localhost:3000";
+  const isProd =
+    typeof import.meta !== "undefined"
+      ? Boolean(import.meta.env?.PROD)
+      : process.env.NODE_ENV === "production";
+  const socketUrl = isProd ? window.location.origin : "http://localhost:3000";
 
   socket = io(socketUrl);
 

@@ -7,10 +7,15 @@ const GameManager = require("./game/GameManager");
 
 const app = express();
 const server = http.createServer(app);
+const devClientPort = process.env.VITE_PORT || 5173;
+const clientOrigin =
+  process.env.CLIENT_ORIGIN ||
+  (process.env.NODE_ENV === "production"
+    ? undefined
+    : `http://localhost:${devClientPort}`);
 const io = new Server(server, {
   cors: {
-    origin:
-      process.env.NODE_ENV === "development" ? "http://localhost:8080" : false,
+    origin: process.env.NODE_ENV === "production" ? false : clientOrigin,
     methods: ["GET", "POST"],
   },
 });
