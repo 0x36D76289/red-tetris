@@ -1,12 +1,26 @@
 import { io } from "socket.io-client";
 
+const resolveIsProd = () => {
+  let isProdEnv = process.env.NODE_ENV === "production";
+  try {
+    // Use eval to avoid static parsing issues with import.meta in Jest/Node.
+    // eslint-disable-next-line no-eval
+    const metaEnv = eval(
+      "typeof import !== 'undefined' && import.meta && import.meta.env ? import.meta.env : undefined"
+    );
+    if (metaEnv && typeof metaEnv.PROD !== "undefined") {
+      isProdEnv = Boolean(metaEnv.PROD);
+    }
+  } catch (_) {
+    // Ignore if import.meta is not available (e.g., tests).
+  }
+  return isProdEnv;
+};
+
 let socket = null;
 
 export const initializeSocket = () => (dispatch) => {
-  const isProd =
-    typeof import.meta !== "undefined"
-      ? Boolean(import.meta.env?.PROD)
-      : process.env.NODE_ENV === "production";
+  const isProd = resolveIsProd();
   const socketUrl = isProd ? window.location.origin : "http://localhost:3000";
 
   socket = io(socketUrl);
@@ -100,9 +114,9 @@ export const playerDrop = (type) => () => {
   }
 };
 
-export const lineCleared = (linesCleared, field) => () => {
+export const lineCleared = (piece) => () => {
   if (socket) {
-    socket.emit("line_cleared", { linesCleared, field });
+    socket.emit("line_cleared", { piece });
   }
 };
 
@@ -124,3 +138,8 @@ export const usePiece = () => (dispatch) => {
 };
 
 export const getSocket = () => socket;
+
+// Test-only helper to inject a mocked socket instance.
+export const __setSocketForTests = (mockSocket) => {
+  socket = mockSocket;
+};

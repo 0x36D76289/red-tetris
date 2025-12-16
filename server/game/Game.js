@@ -64,6 +64,8 @@ Game.prototype.start = function () {
 
   this.isStarted = true;
   this.isFinished = false;
+  this.pieceSequence = [];
+  this.currentPieceIndex = 0;
   this.generatePieceSequence(100);
 
   this.players.forEach((player) => player.reset());

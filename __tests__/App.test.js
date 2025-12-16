@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 import App from "../client/App";
 import configureMockStore from "redux-mock-store";
-import thunk from "redux-thunk";
+import { thunk } from "redux-thunk";
 
 jest.mock("socket.io-client", () => {
   const mockSocket = {

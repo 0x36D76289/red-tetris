@@ -1,15 +1,14 @@
-import { createStore, applyMiddleware, compose } from "redux";
-import { thunk } from "redux-thunk";
+import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./reducers";
 
-const composeEnhancers =
-  (typeof window !== "undefined" &&
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
-  compose;
-
-const store = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(thunk))
-);
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+      immutableCheck: false, // Allow non-serializable socket instance without deep freezing
+    }),
+  devTools: process.env.NODE_ENV !== "production",
+});
 
 export default store;

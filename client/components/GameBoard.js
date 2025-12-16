@@ -104,9 +104,7 @@ const GameBoard = () => {
 
     setField(clearedField);
 
-    if (count > 0) {
-      dispatch(lineCleared(count, clearedField));
-    }
+    dispatch(lineCleared(currentPiece));
 
     // Check game over
     if (isGameOver(clearedField)) {

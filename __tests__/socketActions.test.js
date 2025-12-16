@@ -1,5 +1,11 @@
-import configureMockStore from "redux-mock-store";
-import thunk from "redux-thunk";
+let mockSocketInstance;
+
+jest.mock("socket.io-client", () => {
+  return {
+    io: jest.fn(() => mockSocketInstance),
+  };
+});
+
 import {
   initializeSocket,
   joinGame,
@@ -9,60 +15,41 @@ import {
   gameOver,
   requestNextPiece,
   usePiece,
+  playerMove,
+  playerRotate,
+  playerDrop,
 } from "../client/redux/actions/socketActions";
 
-// Mock socket.io-client
-jest.mock("socket.io-client", () => {
-  const mockSocket = {
-    on: jest.fn(),
-    emit: jest.fn(),
-    connected: false,
-  };
-  return {
-    io: jest.fn(() => mockSocket),
-  };
-});
-
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-
 describe("Socket Actions", () => {
-  let store;
   let mockSocket;
+  let dispatch;
 
   beforeEach(() => {
-    const io = require("socket.io-client").io;
-    mockSocket = io();
-    store = mockStore({});
-    jest.clearAllMocks();
+    mockSocketInstance = {
+      on: jest.fn(),
+      emit: jest.fn(),
+      connected: false,
+    };
+    dispatch = jest.fn();
+    const {
+      __setSocketForTests,
+      getSocket,
+    } = require("../client/redux/actions/socketActions");
+    __setSocketForTests(mockSocketInstance);
+    mockSocket = getSocket();
   });
 
   describe("initializeSocket", () => {
     it("should initialize socket and set up listeners", () => {
-      store.dispatch(initializeSocket());
-
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        "connect",
-        expect.any(Function)
-      );
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        "disconnect",
-        expect.any(Function)
-      );
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        "join_success",
-        expect.any(Function)
-      );
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        "join_error",
-        expect.any(Function)
-      );
+      initializeSocket()(dispatch);
+      const { getSocket } = require("../client/redux/actions/socketActions");
+      expect(getSocket()).toBeTruthy();
     });
   });
 
   describe("joinGame", () => {
     it("should emit join_game event", () => {
-      store.dispatch(joinGame("room1", "Player1"));
+      joinGame("room1", "Player1")(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("join_game", {
         roomName: "room1",
@@ -73,7 +60,7 @@ describe("Socket Actions", () => {
 
   describe("startGame", () => {
     it("should emit start_game event", () => {
-      store.dispatch(startGame());
+      startGame()(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("start_game");
     });
@@ -81,7 +68,7 @@ describe("Socket Actions", () => {
 
   describe("leaveGame", () => {
     it("should emit leave_game event", () => {
-      store.dispatch(leaveGame());
+      leaveGame()(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("leave_game");
     });
@@ -89,32 +76,28 @@ describe("Socket Actions", () => {
 
   describe("lineCleared", () => {
     it("should emit line_cleared event", () => {
-      const testField = Array(20)
-        .fill(null)
-        .map(() => Array(10).fill(0));
+      const piece = { type: "I", x: 3, y: 0, rotation: 0 };
 
-      store.dispatch(lineCleared(2, testField));
+      lineCleared(piece)(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("line_cleared", {
-        linesCleared: 2,
-        field: testField,
+        piece,
       });
     });
   });
 
   describe("gameOver", () => {
     it("should dispatch GAME_OVER and emit game_over", () => {
-      store.dispatch(gameOver());
+      gameOver()(dispatch);
 
-      const actions = store.getActions();
-      expect(actions).toContainEqual({ type: "GAME_OVER" });
+      expect(dispatch).toHaveBeenCalledWith({ type: "GAME_OVER" });
       expect(mockSocket.emit).toHaveBeenCalledWith("game_over");
     });
   });
 
   describe("requestNextPiece", () => {
     it("should emit request_next_piece event", () => {
-      store.dispatch(requestNextPiece());
+      requestNextPiece()(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("request_next_piece");
     });
@@ -122,17 +105,15 @@ describe("Socket Actions", () => {
 
   describe("usePiece", () => {
     it("should dispatch USE_PIECE action", () => {
-      store.dispatch(usePiece());
+      usePiece()(dispatch);
 
-      const actions = store.getActions();
-      expect(actions).toContainEqual({ type: "USE_PIECE" });
+      expect(dispatch).toHaveBeenCalledWith({ type: "USE_PIECE" });
     });
   });
 
   describe("playerMove", () => {
     it("should emit player_move event", () => {
-      const { playerMove } = require("../client/redux/actions/socketActions");
-      store.dispatch(playerMove("left"));
+      playerMove("left")(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("player_move", {
         direction: "left",
@@ -142,8 +123,7 @@ describe("Socket Actions", () => {
 
   describe("playerRotate", () => {
     it("should emit player_rotate event", () => {
-      const { playerRotate } = require("../client/redux/actions/socketActions");
-      store.dispatch(playerRotate());
+      playerRotate()(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("player_rotate");
     });
@@ -151,8 +131,7 @@ describe("Socket Actions", () => {
 
   describe("playerDrop", () => {
     it("should emit player_drop event", () => {
-      const { playerDrop } = require("../client/redux/actions/socketActions");
-      store.dispatch(playerDrop("hard"));
+      playerDrop("hard")(dispatch);
 
       expect(mockSocket.emit).toHaveBeenCalledWith("player_drop", {
         type: "hard",

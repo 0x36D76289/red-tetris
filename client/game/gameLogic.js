@@ -1,9 +1,11 @@
+import cloneDeep from "lodash/cloneDeep";
 import { TETROMINOS } from "./constants";
 
-export const createField = () =>
-  Array(20)
-    .fill(null)
-    .map(() => Array(10).fill(0));
+const EMPTY_FIELD = Array(20)
+  .fill(null)
+  .map(() => Array(10).fill(0));
+
+export const createField = () => cloneDeep(EMPTY_FIELD);
 
 export const isValidPosition = (field, piece, x, y, rotation = null) => {
   const pieceRotation = rotation !== null ? rotation : piece.rotation;
@@ -96,7 +98,7 @@ export const hardDrop = (field, piece) => {
 };
 
 export const mergePieceToField = (field, piece) => {
-  const newField = field.map((row) => [...row]);
+  const newField = cloneDeep(field);
   const shape = TETROMINOS[piece.type][piece.rotation];
 
   for (let row = 0; row < shape.length; row++) {

@@ -1,4 +1,5 @@
 const Game = require("./Game");
+const { applyPieceLock, calculateSpectrum } = require("./rules");
 
 function GameManager(io) {
   this.io = io;
@@ -70,10 +71,12 @@ GameManager.prototype.handleStartGame = function (socket, data) {
   }
 
   // Send initial pieces to all players
+  const initialPieces = game.getNextPieces(game.currentPieceIndex, 5);
+  game.currentPieceIndex += initialPieces.length;
+
   game.players.forEach((player, socketId) => {
-    const pieces = game.getNextPieces(0, 5);
     this.io.to(socketId).emit("game_started", {
-      pieces,
+      pieces: initialPieces,
     });
   });
 
@@ -122,7 +125,7 @@ GameManager.prototype.handlePlayerDrop = function (socket, data) {
 };
 
 GameManager.prototype.handleLineCleared = function (socket, data) {
-  const { linesCleared, field } = data;
+  const { piece } = data || {};
   const roomName = this.playerToGame.get(socket.id);
   if (!roomName) return;
 
@@ -133,10 +136,23 @@ GameManager.prototype.handleLineCleared = function (socket, data) {
 
   if (!player || !player.isAlive || !game.isStarted) return;
 
-  player.field = field;
-  player.updateSpectrum();
+  const result = applyPieceLock(player.field, piece);
 
-  game.playerCompletedLines(socket.id, linesCleared);
+  if (!result.valid) {
+    socket.emit("game_error", { error: "Invalid piece placement" });
+    return;
+  }
+
+  player.field = result.field;
+  player.spectrum = result.spectrum || calculateSpectrum(player.field);
+
+  if (result.gameOver) {
+    game.playerDied(socket.id);
+    return;
+  }
+
+  game.playerCompletedLines(socket.id, result.linesCleared);
+  game.broadcastSpectrums();
 };
 
 GameManager.prototype.handleGameOver = function (socket, data) {
