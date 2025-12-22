@@ -1,0 +1,41 @@
+.controls {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #e94560;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.controls h3 {
+  margin: 0 0 15px 0;
+  color: #e94560;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.control-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.key {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  color: #fff;
+}
+
+.action {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}

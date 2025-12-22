@@ -1,17 +1,19 @@
 {
   "name": "red-tetris",
   "version": "1.0.0",
-  "description": "Red-Tetris :)",
-  "main": "server/index.js",
+  "description": "Networked multiplayer Tetris game - Full Stack JavaScript",
+  "main": "src/server/index.js",
+  "type": "module",
   "scripts": {
-    "start": "node server/index.js",
-    "dev:server": "nodemon server/index.js",
-    "dev:client": "vite --config vite.config.js",
-    "build": "vite build --config vite.config.js",
-    "preview": "vite preview --config vite.config.js",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch",
-    "lint": "eslint server client"
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "nodemon --watch src/server src/server/index.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node src/server/index.js",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .js,.jsx"
   },
   "keywords": [
     "tetris",
@@ -21,36 +23,31 @@
     "redux"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "@reduxjs/toolkit": "^2.11.2",
-    "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "lodash": "^4.17.21",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
-    "@babel/preset-react": "^7.28.5",
-    "@redux-devtools/extension": "^3.3.0",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@reduxjs/toolkit": "^2.11.2",
+    "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^16.3.1",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^5.1.2",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "jsdom": "^27.3.0",
     "nodemon": "^3.1.11",
-    "ramda": "^0.32.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.10.1",
-    "redux": "^5.0.1",
-    "redux-mock-store": "^1.5.5",
+    "react-router-dom": "^7.11.0",
     "redux-thunk": "^3.1.0",
-    "socket.io-client": "^4.8.1",
-    "vite": "^6.0.5"
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16",
+    "@vitest/coverage-v8": "^4.0.16"
   }
 }

@@ -1,8 +1,30 @@
-node_modules/
+# Dependencies
+node_modules/*
+
+# Build output
 dist/
+
+# Environment variables
 .env
-coverage/
-.DS_Store
-*.log
+.env.local
+.env.*.local
+
+# IDE
 .vscode/
 .idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Temp
+*.tmp
+*.temp
+

@@ -1,34 +1,30 @@
-const { defineConfig } = require("vite");
-const react = require("@vitejs/plugin-react");
-const path = require("path");
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-const devPort = Number(process.env.VITE_PORT) || 5173;
-const previewPort = Number(process.env.VITE_PREVIEW_PORT) || 4173;
-
-module.exports = defineConfig({
+export default defineConfig({
   plugins: [react()],
-  root: path.resolve(__dirname, "client"),
+  root: ".",
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+  },
   server: {
-    port: devPort,
-    strictPort: true,
+    port: 3000,
     proxy: {
       "/socket.io": {
-        target: "http://localhost:3000",
+        target: "http://localhost:3004",
         ws: true,
       },
     },
   },
-  preview: {
-    port: previewPort,
-    strictPort: true,
-  },
-  build: {
-    outDir: path.resolve(__dirname, "dist"),
-    emptyOutDir: true,
-  },
-  esbuild: {
-    loader: "jsx",
-    include: /client\/.*\.js$/,
-    exclude: /node_modules/,
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.js",
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "src/test/", "**/*.config.js"],
+    },
   },
 });

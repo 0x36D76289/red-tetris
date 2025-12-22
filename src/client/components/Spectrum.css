@@ -1,0 +1,54 @@
+.spectrum-container {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(233, 69, 96, 0.5);
+  border-radius: 8px;
+  padding: 10px;
+  position: relative;
+}
+
+.spectrum-name {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.spectrum-grid {
+  display: flex;
+  gap: 1px;
+  justify-content: center;
+}
+
+.spectrum-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.spectrum-cell {
+  width: 6px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
+}
+
+.spectrum-cell.filled {
+  background: #e94560;
+}
+
+.spectrum-eliminated {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+}
